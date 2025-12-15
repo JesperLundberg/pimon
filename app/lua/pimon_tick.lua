@@ -12,13 +12,6 @@
 local config = require("pimon_config")
 local utils = require("pimon_utils")
 
-local DB_PATH = config.DB_PATH
-local HOST_FS = config.HOST_FS
-
-local function open_db()
-	return utils.open_db(DB_PATH)
-end
-
 local function now_utc()
 	-- SQLite-friendly UTC timestamp
 	return utils.run_cmd("date -u '+%Y-%m-%d %H:%M:%S'")
@@ -39,7 +32,7 @@ end
 
 -- Return disk usage percent for / on the HOST filesystem.
 local function disk_used_pct()
-	local raw = utils.run_cmd([[df -P /hostfs | awk 'NR==2{print $5}']]) or ""
+	local raw = utils.run_cmd("df -P " .. config.HOST_FS .. "| awk 'NR==2{print $5}'") or ""
 	-- Grab only the numbers of the returned value
 	raw = raw:match("(%d+)")
 	local disk_usage = tonumber(raw)
@@ -99,7 +92,7 @@ local function main()
 	-- Ensure db directory exists on tmpfs
 	utils.ensure_dir("/opt/pimon/db")
 
-	local db = open_db()
+	local db = utils.open_db(config.DB_PATH)
 	init_schema(db)
 
 	local total_kb, avail_kb = mem_kb()

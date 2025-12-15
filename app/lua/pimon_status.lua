@@ -7,10 +7,6 @@ local utils = require("pimon_utils")
 local DB_PATH = config.DB_PATH
 local JSON_PATH = config.JSON_PATH
 
-local function open_db()
-	return utils.open_db(DB_PATH)
-end
-
 local function get_latest(db)
 	local row
 	for r in
@@ -41,7 +37,7 @@ local function write_json(obj)
 end
 
 local function main()
-	local db = open_db()
+	local db = utils.open_db(DB_PATH)
 	local latest = get_latest(db)
 	db:close()
 

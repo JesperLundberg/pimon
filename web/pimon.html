@@ -17,86 +17,417 @@
         --green: #40a02b;
         --yellow: #df8e1d;
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-      header { padding: 18px 18px 10px; }
-      h1 { font-size: 22px; font-weight: 700; }
-      .sub { color: var(--subtext); font-size: 13px; margin-top: 6px; }
-      .wrap { padding: 0 18px 22px; max-width: 1100px; margin: 0 auto; }
-      .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
-      .card { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-      .label { color: var(--subtext); font-size: 12px; }
-      .value { font-size: 20px; font-weight: 700; margin-top: 6px; }
-      .updated { color: var(--subtext); font-size: 12px; margin-top: 6px; }
-      .grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 14px; }
-      .panel { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-      .panel h2 { font-size: 14px; margin-bottom: 10px; }
-      img { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); background: white; }
-      @media (min-width: 900px) {
-        .cards { grid-template-columns: repeat(4, 1fr); }
-        .grid { grid-template-columns: 1fr 1fr; }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at top, #f4f5fb 0, var(--bg) 60%);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 1.5rem auto 2.5rem;
+        padding: 0 1rem;
+        width: 100%;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 1.2rem;
+      }
+      header h1 {
+        font-size: 2rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.25rem;
+      }
+      header p {
+        font-size: 0.95rem;
+        color: var(--subtext);
+      }
+      header .tagline {
+        font-size: 0.8rem;
+        opacity: 0.85;
+      }
+
+      /* STATUS CARDS */
+      .status-row {
+        display: grid;
+        gap: 0.9rem;
+        margin-top: 1.2rem;
+      }
+      @media (min-width: 768px) {
+        .status-row {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+
+      .status-card {
+        background: #ffffffcc;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+        padding: 0.7rem 0.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-height: 92px;
+      }
+
+      .status-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--subtext);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .status-title span.label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .status-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      .status-value {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .status-sub {
+        font-size: 0.8rem;
+        color: var(--subtext);
+      }
+      .status-updated {
+        font-size: 0.7rem;
+        color: var(--subtext);
+        text-align: right;
+      }
+
+      /* CHARTS – STACKED */
+      .grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .chart-card {
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .chart-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .chart-title span.dot {
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      .chart-meta {
+        font-size: 0.85rem;
+        color: var(--subtext);
+      }
+
+      .chart-img-wrap {
+        margin-top: 0.5rem;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--border);
+        width: 100%;
+      }
+
+      .chart-img-wrap img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Bubble / pill in chart header (top right) */
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.15rem 0.6rem;
+        font-size: 0.78rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--subtext);
+        white-space: nowrap;
+      }
+
+      .pill-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 999px;
+        background: var(--accent);
+        flex-shrink: 0;
+      }
+
+      footer {
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--subtext);
+        margin-top: 2rem;
+      }
+
+      /* Slightly nicer monospace for tiny values when needed */
+      .mono {
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
       }
     </style>
   </head>
+
   <body>
-    <header class="wrap">
-      <h1>Pi Monitor</h1>
-      <div class="sub">Auto-refresh every 60s · Data: last 24h (1 sample/min)</div>
+    <div class="page">
+      <header>
+        <h1>Pi Monitor</h1>
+        <p>Lightweight system graphs rendered on your Pi.</p>
+        <p class="tagline">Auto-refresh every 60 seconds.</p>
+      </header>
 
-      <div class="cards">
-        <div class="card">
-          <div class="label">CPU Load (1m)</div>
-          <div class="value" id="status-load-main">–</div>
-          <div class="updated" id="status-updated">Updated: –</div>
-        </div>
-        <div class="card">
-          <div class="label">MemAvailable</div>
-          <div class="value" id="status-mem-main">–</div>
-          <div class="updated" id="status-mem-sub">–</div>
-        </div>
-        <div class="card">
-          <div class="label">Disk used (/)</div>
-          <div class="value" id="status-disk-main">–</div>
-          <div class="updated" id="status-disk-sub">–</div>
-        </div>
-        <div class="card">
-          <div class="label">CPU temp</div>
-          <div class="value" id="status-temp-main">–</div>
-          <div class="updated" id="status-temp-sub">–</div>
-        </div>
-      </div>
-    </header>
+      <!-- STATUS CARDS -->
+      <section class="status-row">
+        <article class="status-card">
+          <div class="status-title">
+            <span class="label"><span class="status-dot"></span> CPU Load</span>
+          </div>
+          <div class="status-value" id="status-load-main">–</div>
+          <div class="status-sub">1-minute load average</div>
+          <div class="status-updated" id="status-updated">Updated: –</div>
+        </article>
 
-    <main class="wrap">
-      <div class="grid">
-        <div class="panel">
-          <h2>CPU Load (1m)</h2>
-          <img src="pimon/load.png" alt="CPU load graph" />
-        </div>
-        <div class="panel">
-          <h2>CPU Temperature</h2>
-          <img src="pimon/cpu_temp.png" alt="CPU temp graph" />
-        </div>
-        <div class="panel">
-          <h2>MemAvailable</h2>
-          <img src="pimon/mem_avail.png" alt="Memory available graph" />
-        </div>
-        <div class="panel">
-          <h2>Disk used (/)</h2>
-          <img src="pimon/disk_used.png" alt="Disk used graph" />
-        </div>
-      </div>
-    </main>
+        <article class="status-card">
+          <div class="status-title">
+            <span class="label"
+              ><span
+                class="status-dot"
+                style="background: var(--accent-2)"
+              ></span>
+              Memory</span
+            >
+          </div>
+          <div class="status-value" id="status-mem-main">–</div>
+          <div class="status-sub" id="status-mem-sub">–</div>
+          <div class="status-updated">MemAvailable</div>
+        </article>
 
+        <article class="status-card">
+          <div class="status-title">
+            <span class="label"
+              ><span
+                class="status-dot"
+                style="background: var(--yellow)"
+              ></span>
+              Disk</span
+            >
+          </div>
+          <div class="status-value" id="status-disk-main">–</div>
+          <div class="status-sub" id="status-disk-sub">–</div>
+          <div class="status-updated">From host mount</div>
+        </article>
+
+        <article class="status-card">
+          <div class="status-title">
+            <span class="label"
+              ><span class="status-dot" style="background: var(--green)"></span>
+              CPU Temp</span
+            >
+          </div>
+          <div class="status-value" id="status-temp-main">–</div>
+          <div class="status-sub" id="status-temp-sub">–</div>
+          <div class="status-updated">thermal_zone0</div>
+        </article>
+      </section>
+
+      <!-- GRAPHS -->
+      <main class="grid">
+        <!-- CPU Load -->
+        <section class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <span class="dot"></span>
+              <span>CPU Load (1m)</span>
+            </div>
+            <div class="pill">
+              <span class="pill-dot" style="background: #1e66f5"></span>
+              <span>load1</span>
+            </div>
+          </div>
+          <div class="chart-meta">Load average over the last 24 hours.</div>
+          <div class="chart-img-wrap">
+            <picture>
+              <source
+                srcset="pimon/load_mobile.png"
+                media="(max-width: 768px)"
+              />
+              <img src="pimon/load.png" alt="CPU load chart" />
+            </picture>
+          </div>
+        </section>
+
+        <!-- CPU Temperature -->
+        <section class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <span class="dot" style="background: var(--green)"></span>
+              <span>CPU Temperature</span>
+            </div>
+            <div class="pill">
+              <span class="pill-dot" style="background: var(--green)"></span>
+              <span>°C</span>
+            </div>
+          </div>
+          <div class="chart-meta">
+            Temperature from thermal_zone0 (last 24 hours).
+          </div>
+          <div class="chart-img-wrap">
+            <picture>
+              <source
+                srcset="pimon/cpu_temp_mobile.png"
+                media="(max-width: 768px)"
+              />
+              <img src="pimon/cpu_temp.png" alt="CPU temperature chart" />
+            </picture>
+          </div>
+        </section>
+
+        <!-- MemAvailable -->
+        <section class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <span class="dot" style="background: var(--accent-2)"></span>
+              <span>Memory Available</span>
+            </div>
+            <div class="pill">
+              <span class="pill-dot" style="background: var(--accent-2)"></span>
+              <span>MemAvailable</span>
+            </div>
+          </div>
+          <div class="chart-meta">
+            Memory available to the system (last 24 hours).
+          </div>
+          <div class="chart-img-wrap">
+            <picture>
+              <source
+                srcset="pimon/mem_avail_mobile.png"
+                media="(max-width: 768px)"
+              />
+              <img src="pimon/mem_avail.png" alt="Memory available chart" />
+            </picture>
+          </div>
+        </section>
+
+        <!-- Disk Used -->
+        <section class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <span class="dot" style="background: var(--yellow)"></span>
+              <span>Disk Used (/)</span>
+            </div>
+            <div class="pill">
+              <span class="pill-dot" style="background: var(--yellow)"></span>
+              <span>% used</span>
+            </div>
+          </div>
+          <div class="chart-meta">
+            Root filesystem usage on the host mount (last 24 hours).
+          </div>
+          <div class="chart-img-wrap">
+            <picture>
+              <source
+                srcset="pimon/disk_used_mobile.png"
+                media="(max-width: 768px)"
+              />
+              <img src="pimon/disk_used.png" alt="Disk used chart" />
+            </picture>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        Served by Raspberry Pi • Data stored in SQLite • Plots by gnuplot
+      </footer>
+    </div>
+
+    <!-- STATUS JSON SCRIPT -->
     <script>
-      function fmtNum(n, decimals) {
-        if (n == null || Number.isNaN(n)) return "–";
-        return decimals != null ? Number(n).toFixed(decimals) : String(n);
+      function formatTime(ts) {
+        if (!ts || ts <= 0) return "–";
+        const d = new Date(ts * 1000);
+
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+
+        const hh = String(d.getHours()).padStart(2, "0");
+        const mi = String(d.getMinutes()).padStart(2, "0");
+        const ss = String(d.getSeconds()).padStart(2, "0");
+
+        // Swedish-style timestamp: 2025-12-03 16:55:01
+        return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
       }
 
-      function fmtKb(kb) {
-        if (kb == null || Number.isNaN(kb)) return "–";
-        const mb = kb / 1024.0;
+      function safeNum(v, decimals) {
+        const n = Number(v);
+        if (!isFinite(n)) return null;
+        return decimals != null ? n.toFixed(decimals) : n.toString();
+      }
+
+      function formatBytesFromKb(kb) {
+        const n = Number(kb);
+        if (!isFinite(n)) return "–";
+        const mb = n / 1024.0;
         const gb = mb / 1024.0;
         if (gb >= 1) return gb.toFixed(2) + " GB";
         return mb.toFixed(0) + " MB";
@@ -124,24 +455,33 @@
             return;
           }
 
-          setText("status-load-main", fmtNum(data.load1, 2));
-          setText("status-mem-main", fmtKb(data.mem_avail_kb));
-          setText("status-disk-main", fmtNum(data.disk_used_pct, 0) + "%");
-          setText("status-temp-main", data.cpu_temp_c != null ? fmtNum(data.cpu_temp_c, 1) + " °C" : "–");
+          setText("status-load-main", safeNum(data.load1, 2) ?? "–");
 
-          const updated = data.ts_utc ? ("Updated: " + data.ts_utc + " UTC") : "Updated: –";
-          setText("status-updated", updated);
+          setText("status-mem-main", formatBytesFromKb(data.mem_avail_kb));
+          setText(
+            "status-mem-sub",
+            "Total: " + formatBytesFromKb(data.mem_total_kb),
+          );
 
-          setText("status-mem-sub", "Total: " + fmtKb(data.mem_total_kb));
-          setText("status-disk-sub", "From host mount");
-          setText("status-temp-sub", data.cpu_temp_c != null ? "thermal_zone0" : "n/a");
+          const disk = safeNum(data.disk_used_pct, 0);
+          setText("status-disk-main", disk ? disk + "%" : "–");
+          setText("status-disk-sub", "Host / mount");
+
+          if (data.cpu_temp_c != null) {
+            setText("status-temp-main", safeNum(data.cpu_temp_c, 1) + " °C");
+            setText("status-temp-sub", "thermal_zone0");
+          } else {
+            setText("status-temp-main", "–");
+            setText("status-temp-sub", "n/a");
+          }
+
+          setText("status-updated", "Updated: " + formatTime(data.ts_epoch));
         } catch (e) {
           // Keep old values on error.
         }
       }
 
-      loadStatus();
-      setInterval(loadStatus, 15000);
+      document.addEventListener("DOMContentLoaded", loadStatus);
     </script>
   </body>
 </html>
