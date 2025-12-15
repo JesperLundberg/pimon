@@ -25,7 +25,5 @@ set title TITLE textcolor rgb "#4c4f69"
 set ylabel YLAB textcolor rgb "#4c4f69"
 
 # Build sqlite3 command as a gnuplot input stream.
-CMD = sprintf("< sqlite3 %s \"SELECT ts_utc, %s FROM pi_tick WHERE ts_utc >= datetime('now','%s') ORDER BY id;\"",
-              DB, COL, WINDOW)
-
+CMD = sprintf("< sqlite3 -noheader -separator '|' '%s' \"SELECT ts_utc, %s FROM pi_tick WHERE ts_utc >= datetime('now','%s') ORDER BY id;\"", DB, COL, WINDOW)
 plot CMD using 1:2 with lines lw LW lc rgb LINECOLOR title ""
