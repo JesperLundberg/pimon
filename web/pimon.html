@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pi Monitor</title>
+    <meta http-equiv="refresh" content="60" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg: #eff1f5;
+        --bg-soft: #e6e9ef;
+        --border: #ccd0da;
+        --text: #4c4f69;
+        --subtext: #5c5f77;
+        --accent: #1e66f5;
+        --accent-2: #dc8a78;
+        --green: #40a02b;
+        --yellow: #df8e1d;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+      header { padding: 18px 18px 10px; }
+      h1 { font-size: 22px; font-weight: 700; }
+      .sub { color: var(--subtext); font-size: 13px; margin-top: 6px; }
+      .wrap { padding: 0 18px 22px; max-width: 1100px; margin: 0 auto; }
+      .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
+      .card { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+      .label { color: var(--subtext); font-size: 12px; }
+      .value { font-size: 20px; font-weight: 700; margin-top: 6px; }
+      .updated { color: var(--subtext); font-size: 12px; margin-top: 6px; }
+      .grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 14px; }
+      .panel { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+      .panel h2 { font-size: 14px; margin-bottom: 10px; }
+      img { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); background: white; }
+      @media (min-width: 900px) {
+        .cards { grid-template-columns: repeat(4, 1fr); }
+        .grid { grid-template-columns: 1fr 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="wrap">
+      <h1>Pi Monitor</h1>
+      <div class="sub">Auto-refresh every 60s · Data: last 24h (1 sample/min)</div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="label">CPU Load (1m)</div>
+          <div class="value" id="status-load-main">–</div>
+          <div class="updated" id="status-updated">Updated: –</div>
+        </div>
+        <div class="card">
+          <div class="label">MemAvailable</div>
+          <div class="value" id="status-mem-main">–</div>
+          <div class="updated" id="status-mem-sub">–</div>
+        </div>
+        <div class="card">
+          <div class="label">Disk used (/)</div>
+          <div class="value" id="status-disk-main">–</div>
+          <div class="updated" id="status-disk-sub">–</div>
+        </div>
+        <div class="card">
+          <div class="label">CPU temp</div>
+          <div class="value" id="status-temp-main">–</div>
+          <div class="updated" id="status-temp-sub">–</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="grid">
+        <div class="panel">
+          <h2>CPU Load (1m)</h2>
+          <img src="pimon/load.png" alt="CPU load graph" />
+        </div>
+        <div class="panel">
+          <h2>CPU Temperature</h2>
+          <img src="pimon/cpu_temp.png" alt="CPU temp graph" />
+        </div>
+        <div class="panel">
+          <h2>MemAvailable</h2>
+          <img src="pimon/mem_avail.png" alt="Memory available graph" />
+        </div>
+        <div class="panel">
+          <h2>Disk used (/)</h2>
+          <img src="pimon/disk_used.png" alt="Disk used graph" />
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function fmtNum(n, decimals) {
+        if (n == null || Number.isNaN(n)) return "–";
+        return decimals != null ? Number(n).toFixed(decimals) : String(n);
+      }
+
+      function fmtKb(kb) {
+        if (kb == null || Number.isNaN(kb)) return "–";
+        const mb = kb / 1024.0;
+        const gb = mb / 1024.0;
+        if (gb >= 1) return gb.toFixed(2) + " GB";
+        return mb.toFixed(0) + " MB";
+      }
+
+      function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      }
+
+      async function loadStatus() {
+        try {
+          const res = await fetch("pimon/status.json?_=" + Date.now());
+          const data = await res.json();
+
+          if (!data || !data.has_data) {
+            setText("status-load-main", "–");
+            setText("status-mem-main", "–");
+            setText("status-disk-main", "–");
+            setText("status-temp-main", "–");
+            setText("status-updated", "Updated: –");
+            setText("status-mem-sub", "–");
+            setText("status-disk-sub", "–");
+            setText("status-temp-sub", "–");
+            return;
+          }
+
+          setText("status-load-main", fmtNum(data.load1, 2));
+          setText("status-mem-main", fmtKb(data.mem_avail_kb));
+          setText("status-disk-main", fmtNum(data.disk_used_pct, 0) + "%");
+          setText("status-temp-main", data.cpu_temp_c != null ? fmtNum(data.cpu_temp_c, 1) + " °C" : "–");
+
+          const updated = data.ts_utc ? ("Updated: " + data.ts_utc + " UTC") : "Updated: –";
+          setText("status-updated", updated);
+
+          setText("status-mem-sub", "Total: " + fmtKb(data.mem_total_kb));
+          setText("status-disk-sub", "From host mount");
+          setText("status-temp-sub", data.cpu_temp_c != null ? "thermal_zone0" : "n/a");
+        } catch (e) {
+          // Keep old values on error.
+        }
+      }
+
+      loadStatus();
+      setInterval(loadStatus, 15000);
+    </script>
+  </body>
+</html>

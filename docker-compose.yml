@@ -1,0 +1,28 @@
+services:
+  pimon:
+    build: ./app
+    container_name: pimon
+    restart: unless-stopped
+    network_mode: host
+    environment: [TZ=Europe/Stockholm]
+    tmpfs: [/opt/pimon/db:size=20m]
+    volumes:
+      - pimon-www:/var/www/html/pimon
+      - ./data:/opt/pimon/backups
+      - /:/hostfs:ro
+      - ./data/archive:/opt/pimon/archive
+
+  web:
+    build: ./web
+    container_name: pimon_web
+    restart: unless-stopped
+    ports: [8088:80]
+    volumes: [pimon-www:/usr/share/nginx/html/pimon:ro]
+
+volumes:
+  pimon-www:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=20m
