@@ -18,13 +18,13 @@ local function now_utc()
 end
 
 local function cpu_load_last_minute()
-	local s = utils.read_file("/proc/loadavg") or "0 0 0 0/0 0"
+	local s = utils.get_value("/proc/loadavg") or "0 0 0 0/0 0"
 	local v = tonumber(s:match("^([%d%.]+)")) or 0.0
 	return v
 end
 
 local function mem_kb()
-	local meminfo = utils.read_file("/proc/meminfo") or ""
+	local meminfo = utils.get_value("/proc/meminfo") or ""
 	local total = tonumber(meminfo:match("MemTotal:%s+(%d+)")) or 0
 	local avail = tonumber(meminfo:match("MemAvailable:%s+(%d+)")) or 0
 	return total, avail
@@ -40,7 +40,7 @@ local function disk_used_pct()
 end
 
 local function cpu_temp_c()
-	local raw = utils.read_file("/sys/class/thermal/thermal_zone0/temp")
+	local raw = utils.get_value("/sys/class/thermal/thermal_zone0/temp")
 	if not raw then
 		return nil
 	end
