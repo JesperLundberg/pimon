@@ -15,10 +15,13 @@ run_plot() {
   title="$4"
   ylab="$5"
   col="$6"
-  yrange="${7:-}"
+  ymin="${7:-}"
+  ymax="${8:-}"
 
   extra=""
-  [ -n "$yrange" ] && extra="; YRANGE=$yrange"
+  if [ -n "$ymin" ] && [ -n "$ymax" ]; then
+    extra="; YMIN=$ymin; YMAX=$ymax"
+  fi
 
   gnuplot -e "PLOT_DIR='$PLOT_DIR'; DB='$DB'; WINDOW='$WINDOW'; OUT='$out'; TITLE='$title'; YLAB='$ylab'; COL='$col'$extra" \
     "$PLOT_DIR/$size" "$PLOT_DIR/$plot"
@@ -46,7 +49,7 @@ run_plot "size_desktop.gp" "plot_single_sql.gp" "$OUT_DIR/mem_avail.png"   "MemA
 run_plot "size_desktop.gp" "plot_single_sql.gp" "$OUT_DIR/cpu_temp.png"    "CPU temp - last 24h"      "C"     "cpu_temp_c"
 run_plot "size_desktop.gp" "plot_single_sql.gp" "$OUT_DIR/vm_wa.png"       "IO wait (wa) - last 24h"  "%"     "vm_wa"
 run_plot "size_desktop.gp" "plot_single_sql.gp" "$OUT_DIR/vm_r.png"        "Run queue (r) - last 24h" "r"     "vm_r"
-run_plot "size_desktop.gp" "plot_single_sql.gp" "$OUT_DIR/vm_idle.png"     "CPU idle - last 24h"      "%"     "vm_id" "[0:100]"
+run_plot "size_desktop.gp" "plot_single_sql.gp" "$OUT_DIR/vm_idle.png" "CPU idle - last 24h" "%" "vm_id" 0 100
 
 run_plot_two "size_desktop.gp" "plot_two_sql.gp" "$OUT_DIR/vm_swap.png" "Swap activity (si / so) - last 24h" "pages/s" "vm_si" "vm_so" "si" "so"
 
@@ -56,6 +59,6 @@ run_plot "size_mobile.gp" "plot_single_sql.gp" "$OUT_DIR/mem_avail_mobile.png" "
 run_plot "size_mobile.gp" "plot_single_sql.gp" "$OUT_DIR/cpu_temp_mobile.png"  "CPU temp - 24h"      "C"     "cpu_temp_c"
 run_plot "size_mobile.gp" "plot_single_sql.gp" "$OUT_DIR/vm_wa_mobile.png"     "IO wait (wa) - 24h"  "%"     "vm_wa"
 run_plot "size_mobile.gp" "plot_single_sql.gp" "$OUT_DIR/vm_r_mobile.png"      "Run queue (r) - 24h" "r"     "vm_r"
-run_plot "size_mobile.gp" "plot_single_sql.gp" "$OUT_DIR/vm_idle_mobile.png"   "CPU idle - last 24h" "%"     "vm_id" "[0:100]"
+run_plot "size_mobile.gp"  "plot_single_sql.gp" "$OUT_DIR/vm_idle_mobile.png" "CPU idle - 24h" "%" "vm_id" 0 100
 
 run_plot_two "size_mobile.gp" "plot_two_sql.gp" "$OUT_DIR/vm_swap_mobile.png" "Swap activity (si / so) - 24h" "pages/s" "vm_si" "vm_so" "si" "so"

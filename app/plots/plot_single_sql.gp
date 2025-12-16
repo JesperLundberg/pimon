@@ -18,8 +18,8 @@ if (!exists("WINDOW")) WINDOW = "-1 day"
 if (!exists("LINECOLOR")) LINECOLOR = "#1e66f5"
 if (!exists("LW")) LW = 2
 
-if (exists("YRANGE")) {
-  set yrange YRANGE
+if (exists("YMIN") && exists("YMAX")) {
+  set yrange [YMIN:YMAX]
 }
 
 set terminal pngcairo size W,H enhanced font ",10"
