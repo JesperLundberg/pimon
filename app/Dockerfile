@@ -9,6 +9,7 @@ RUN apt-get update &&     apt-get install -y --no-install-recommends \
         luarocks \
         sqlite3 \
         gnuplot-nox \
+        procps \
         curl \
         cron \
         tzdata \

@@ -1,10 +1,10 @@
 LUA_PATH=/opt/pimon/lua/?.lua;/opt/pimon/lua/?/init.lua;;
 
-# World tick every minute
-* * * * * root /opt/pimon/lua/pimon_tick.lua >> /var/log/cron.log 2>&1
+# Tick every other minute
+*/2 * * * * root /opt/pimon/lua/pimon_tick.lua >> /var/log/cron.log 2>&1
 
-# Plots every minute, offset to avoid DB conflicts
-* * * * * root /opt/pimon/make_plots.sh >> /var/log/cron.log 2>&1
+# Plots every other minute, offset by 1 minute
+1-59/2 * * * * root /opt/pimon/make_plots.sh >> /var/log/cron.log 2>&1
 
 # Status every minute (no DB writes)
 * * * * * root /opt/pimon/lua/pimon_status.lua >> /var/log/cron.log 2>&1
@@ -12,5 +12,5 @@ LUA_PATH=/opt/pimon/lua/?.lua;/opt/pimon/lua/?/init.lua;;
 # Save DB from tmpfs to disk every hour
 0 * * * * root sqlite3 /opt/pimon/db/pimon.db ".backup '/opt/pimon/backups/pimon.db'" >> /var/log/cron.log 2>&1
 
-# Rotate archives once a week (skeleton)
+# Rotate archives once a week
 0 0 * * 0 root sleep 15 && /opt/pimon/lua/pimon_rotate.lua >> /var/log/cron.log 2>&1
