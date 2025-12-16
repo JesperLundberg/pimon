@@ -367,6 +367,115 @@
             </picture>
           </div>
         </section>
+
+        <!-- IO wait (wa) -->
+        <section class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <span class="dot" style="background: var(--yellow)"></span>
+              <span>I/O wait (wa)</span>
+            </div>
+            <div class="pill">
+              <span class="pill-dot" style="background: var(--yellow)"></span>
+              <span>wa</span>
+            </div>
+          </div>
+          <div class="chart-meta">
+            CPU time spent waiting on I/O (last 24 hours).
+          </div>
+          <div class="chart-img-wrap">
+            <picture>
+              <source
+                srcset="pimon/vm_wa_mobile.png"
+                media="(max-width: 768px)"
+              />
+              <img src="pimon/vm_wa.png" alt="IO wait chart" />
+            </picture>
+          </div>
+        </section>
+
+        <!-- Run queue (r) -->
+        <section class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <span class="dot"></span>
+              <span>Run queue (r)</span>
+            </div>
+            <div class="pill">
+              <span class="pill-dot" style="background: #1e66f5"></span>
+              <span>r</span>
+            </div>
+          </div>
+          <div class="chart-meta">
+            Runnable processes waiting for CPU (last 24 hours).
+          </div>
+          <div class="chart-img-wrap">
+            <picture>
+              <source
+                srcset="pimon/vm_r_mobile.png"
+                media="(max-width: 768px)"
+              />
+              <img src="pimon/vm_r.png" alt="Run queue chart" />
+            </picture>
+          </div>
+        </section>
+
+        <!-- CPU idle -->
+        <section class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <span class="dot" style="background: var(--accent-2)"></span>
+              <span>CPU idle</span>
+            </div>
+            <div class="pill">
+              <span class="pill-dot" style="background: var(--accent-2)"></span>
+              <span>id</span>
+            </div>
+          </div>
+          <div class="chart-meta">
+            CPU idle percentage over the last 24 hours.
+          </div>
+          <div class="chart-img-wrap">
+            <picture>
+              <source
+                srcset="pimon/vm_idle_mobile.png"
+                media="(max-width: 768px)"
+              />
+              <img src="pimon/vm_idle.png" alt="CPU idle chart" />
+            </picture>
+          </div>
+        </section>
+
+        <!-- Swap activity (si/so) -->
+        <section class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <span class="dot" style="background: var(--green)"></span>
+              <span>Swap activity (si / so)</span>
+            </div>
+            <div class="pill">
+              <span class="pill-dot" style="background: var(--green)"></span>
+              <span>si</span>
+              <span
+                class="pill-dot"
+                style="background: #1e66f5; margin-left: 0.5rem"
+              ></span>
+              <span>so</span>
+            </div>
+          </div>
+          <div class="chart-meta">
+            Swap-in and swap-out activity (pages/s) over the last 24 hours.
+          </div>
+          <div class="chart-img-wrap">
+            <picture>
+              <source
+                srcset="pimon/vm_swap_mobile.png"
+                media="(max-width: 768px)"
+              />
+              <img src="pimon/vm_swap.png" alt="Swap activity chart" />
+            </picture>
+          </div>
+        </section>
       </main>
 
       <footer>
