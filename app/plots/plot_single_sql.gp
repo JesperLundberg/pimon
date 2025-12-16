@@ -11,7 +11,7 @@
 #   LINECOLOR -> line color (default: #1e66f5)
 #   LW        -> line width (default: 2)
 
-load "plots/common.gp"
+load sprintf("%s/common.gp", PLOT_DIR)
 
 if (!exists("DB")) DB = "/opt/pimon/db/pimon.db"
 if (!exists("WINDOW")) WINDOW = "-1 day"

@@ -1,4 +1,5 @@
 # Mobile size wrapper
 W = 420
 H = 260
-load "plots/plot_single_sql.gp"
+
+load sprintf("%s/plot_single_sql.gp", PLOT_DIR)
