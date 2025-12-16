@@ -15,8 +15,12 @@ run_plot() {
   title="$4"
   ylab="$5"
   col="$6"
+  yrange="${7:-}"
 
-  gnuplot -e "PLOT_DIR='$PLOT_DIR'; DB='$DB'; WINDOW='$WINDOW'; OUT='$out'; TITLE='$title'; YLAB='$ylab'; COL='$col'" \
+  extra=""
+  [ -n "$yrange" ] && extra="; YRANGE=$yrange"
+
+  gnuplot -e "PLOT_DIR='$PLOT_DIR'; DB='$DB'; WINDOW='$WINDOW'; OUT='$out'; TITLE='$title'; YLAB='$ylab'; COL='$col'$extra" \
     "$PLOT_DIR/$size" "$PLOT_DIR/$plot"
 }
 
