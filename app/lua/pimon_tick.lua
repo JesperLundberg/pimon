@@ -54,29 +54,36 @@ local function cpu_temp_c()
 end
 
 local function parse_vmstat_line(line)
-	-- Typical columns:
+	-- Expected columns (procps):
 	-- r b swpd free buff cache si so bi bo in cs us sy id wa st
+
 	local cols = {}
 	for tok in line:gmatch("%S+") do
 		cols[#cols + 1] = tok
 	end
 
-	-- Guard: we need at least up to "id" and ideally "wa"
-	if #cols < 17 then
+	-- Need at least through "id" (15). "wa" (16) and "st" (17) are usually present.
+	if #cols < 15 then
 		error("vmstat output too short: " .. line, 0)
 	end
 
 	local v = {
 		r = tonumber(cols[1]) or 0,
 		b = tonumber(cols[2]) or 0,
-		si = tonumber(cols[11]) or 0,
-		so = tonumber(cols[12]) or 0,
-		bi = tonumber(cols[13]) or 0,
-		bo = tonumber(cols[14]) or 0,
-		us = tonumber(cols[15]) or 0,
-		sy = tonumber(cols[16]) or 0,
-		id = tonumber(cols[17]) or 0,
-		wa = tonumber(cols[18]) or 0, -- some builds omit wa/st; if missing it becomes nil -> 0
+
+		-- Swap (usually kB/s in procps vmstat)
+		si = tonumber(cols[7]) or 0,
+		so = tonumber(cols[8]) or 0,
+
+		-- Block IO (blocks/s; depends on system block size)
+		bi = tonumber(cols[9]) or 0,
+		bo = tonumber(cols[10]) or 0,
+
+		-- CPU (%)
+		us = tonumber(cols[13]) or 0,
+		sy = tonumber(cols[14]) or 0,
+		id = tonumber(cols[15]) or 0,
+		wa = tonumber(cols[16]) or 0, -- may be missing on some builds
 	}
 
 	return v
