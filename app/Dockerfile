@@ -7,7 +7,9 @@ ENV LUA_PATH="/opt/pimon/lua/?.lua;/opt/pimon/lua/?/init.lua;;"
 # lsqlite3 and dkjson are luarocks, not apk packages. Alpine ships one luarocks package
 # per Lua version (luarocks5.1, binary luarocks-5.1). Rocks install under /usr/local,
 # which LuaJIT searches by default. Build tooling is removed in the same layer.
-RUN apk add --no-cache luajit sqlite gnuplot procps-ng tzdata \
+# sqlite-libs must be explicit: lsqlite3.so links against it, and otherwise it is only
+# pulled in by sqlite-dev and removed together with the build group.
+RUN apk add --no-cache luajit sqlite sqlite-libs gnuplot procps-ng tzdata \
     && apk add --no-cache --virtual .build luarocks5.1 build-base luajit-dev sqlite-dev unzip curl \
     && luarocks-5.1 install lsqlite3 LUA_INCDIR=/usr/include/luajit-2.1 \
     && luarocks-5.1 install dkjson \
