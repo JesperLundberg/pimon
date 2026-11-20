@@ -292,190 +292,7 @@
 
       <!-- GRAPHS -->
       <main class="grid">
-        <!-- CPU Load -->
-        <section class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">
-              <span class="dot"></span>
-              <span>CPU Load (1m)</span>
-            </div>
-            <div class="pill">
-              <span class="pill-dot" style="background: #1e66f5"></span>
-              <span>load1</span>
-            </div>
-          </div>
-          <div class="chart-meta">Load average over the last 24 hours.</div>
-          <div class="chart-img-wrap">
-            <picture>
-              <source
-                srcset="pimon/load_mobile.png"
-                media="(max-width: 768px)"
-              />
-              <img src="pimon/load.png" alt="CPU load chart" />
-            </picture>
-          </div>
-        </section>
-
-        <!-- CPU Temperature -->
-        <section class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">
-              <span class="dot" style="background: var(--green)"></span>
-              <span>CPU Temperature</span>
-            </div>
-            <div class="pill">
-              <span class="pill-dot" style="background: var(--green)"></span>
-              <span>°C</span>
-            </div>
-          </div>
-          <div class="chart-meta">
-            Temperature from thermal_zone0 (last 24 hours).
-          </div>
-          <div class="chart-img-wrap">
-            <picture>
-              <source
-                srcset="pimon/cpu_temp_mobile.png"
-                media="(max-width: 768px)"
-              />
-              <img src="pimon/cpu_temp.png" alt="CPU temperature chart" />
-            </picture>
-          </div>
-        </section>
-
-        <!-- MemAvailable -->
-        <section class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">
-              <span class="dot" style="background: var(--accent-2)"></span>
-              <span>Memory Available</span>
-            </div>
-            <div class="pill">
-              <span class="pill-dot" style="background: var(--accent-2)"></span>
-              <span>MemAvailable</span>
-            </div>
-          </div>
-          <div class="chart-meta">
-            Memory available to the system (last 24 hours).
-          </div>
-          <div class="chart-img-wrap">
-            <picture>
-              <source
-                srcset="pimon/mem_avail_mobile.png"
-                media="(max-width: 768px)"
-              />
-              <img src="pimon/mem_avail.png" alt="Memory available chart" />
-            </picture>
-          </div>
-        </section>
-
-        <!-- IO wait (wa) -->
-        <section class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">
-              <span class="dot" style="background: var(--yellow)"></span>
-              <span>I/O wait (wa)</span>
-            </div>
-            <div class="pill">
-              <span class="pill-dot" style="background: var(--yellow)"></span>
-              <span>wa</span>
-            </div>
-          </div>
-          <div class="chart-meta">
-            CPU time spent waiting on I/O (last 24 hours).
-          </div>
-          <div class="chart-img-wrap">
-            <picture>
-              <source
-                srcset="pimon/vm_wa_mobile.png"
-                media="(max-width: 768px)"
-              />
-              <img src="pimon/vm_wa.png" alt="IO wait chart" />
-            </picture>
-          </div>
-        </section>
-
-        <!-- Run queue (r) -->
-        <section class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">
-              <span class="dot"></span>
-              <span>Run queue (r)</span>
-            </div>
-            <div class="pill">
-              <span class="pill-dot" style="background: #1e66f5"></span>
-              <span>r</span>
-            </div>
-          </div>
-          <div class="chart-meta">
-            Runnable processes waiting for CPU (last 24 hours).
-          </div>
-          <div class="chart-img-wrap">
-            <picture>
-              <source
-                srcset="pimon/vm_r_mobile.png"
-                media="(max-width: 768px)"
-              />
-              <img src="pimon/vm_r.png" alt="Run queue chart" />
-            </picture>
-          </div>
-        </section>
-
-        <!-- CPU idle -->
-        <section class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">
-              <span class="dot" style="background: var(--accent-2)"></span>
-              <span>CPU idle</span>
-            </div>
-            <div class="pill">
-              <span class="pill-dot" style="background: var(--accent-2)"></span>
-              <span>id</span>
-            </div>
-          </div>
-          <div class="chart-meta">
-            CPU idle percentage over the last 24 hours.
-          </div>
-          <div class="chart-img-wrap">
-            <picture>
-              <source
-                srcset="pimon/vm_idle_mobile.png"
-                media="(max-width: 768px)"
-              />
-              <img src="pimon/vm_idle.png" alt="CPU idle chart" />
-            </picture>
-          </div>
-        </section>
-
-        <!-- Swap activity (si/so) -->
-        <section class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">
-              <span class="dot" style="background: var(--green)"></span>
-              <span>Swap activity (si / so)</span>
-            </div>
-            <div class="pill">
-              <span class="pill-dot" style="background: var(--green)"></span>
-              <span>si</span>
-              <span
-                class="pill-dot"
-                style="background: #1e66f5; margin-left: 0.5rem"
-              ></span>
-              <span>so</span>
-            </div>
-          </div>
-          <div class="chart-meta">
-            Swap-in and swap-out activity (pages/s) over the last 24 hours.
-          </div>
-          <div class="chart-img-wrap">
-            <picture>
-              <source
-                srcset="pimon/vm_swap_mobile.png"
-                media="(max-width: 768px)"
-              />
-              <img src="pimon/vm_swap.png" alt="Swap activity chart" />
-            </picture>
-          </div>
-        </section>
+        <!-- Chart cards are rendered from CHARTS in the script below. -->
       </main>
 
       <footer>
@@ -485,6 +302,116 @@
 
     <!-- STATUS JSON SCRIPT -->
     <script>
+      const BLUE = "#1e66f5";
+      const CHARTS = [
+        {
+          file: "load",
+          title: "CPU Load (1m)",
+          color: BLUE,
+          legend: [{ color: BLUE, label: "load1" }],
+          meta: "Load average over the last 24 hours.",
+          alt: "CPU load chart",
+        },
+        {
+          file: "cpu_temp",
+          title: "CPU Temperature",
+          color: "var(--green)",
+          legend: [{ color: "var(--green)", label: "°C" }],
+          meta: "Temperature from thermal_zone0 (last 24 hours).",
+          alt: "CPU temperature chart",
+        },
+        {
+          file: "mem_avail",
+          title: "Memory Available",
+          color: "var(--accent-2)",
+          legend: [{ color: "var(--accent-2)", label: "MemAvailable" }],
+          meta: "Memory available to the system (last 24 hours).",
+          alt: "Memory available chart",
+        },
+        {
+          file: "vm_wa",
+          title: "I/O wait (wa)",
+          color: "var(--yellow)",
+          legend: [{ color: "var(--yellow)", label: "wa" }],
+          meta: "CPU time spent waiting on I/O (last 24 hours).",
+          alt: "IO wait chart",
+        },
+        {
+          file: "vm_r",
+          title: "Run queue (r)",
+          color: BLUE,
+          legend: [{ color: BLUE, label: "r" }],
+          meta: "Runnable processes waiting for CPU (last 24 hours).",
+          alt: "Run queue chart",
+        },
+        {
+          file: "vm_idle",
+          title: "CPU idle",
+          color: "var(--accent-2)",
+          legend: [{ color: "var(--accent-2)", label: "id" }],
+          meta: "CPU idle percentage over the last 24 hours.",
+          alt: "CPU idle chart",
+        },
+        {
+          file: "vm_swap",
+          title: "Swap activity (si / so)",
+          color: "var(--green)",
+          // Colors match the plot: si is the first (blue) line, so the second (green).
+          legend: [
+            { color: BLUE, label: "si" },
+            { color: "var(--green)", label: "so" },
+          ],
+          meta: "Swap-in and swap-out activity (kB/s) over the last 24 hours.",
+          alt: "Swap activity chart",
+        },
+      ];
+
+      function el(tag, className, text) {
+        const e = document.createElement(tag);
+        if (className) e.className = className;
+        if (text != null) e.textContent = text;
+        return e;
+      }
+
+      function dot(className, color) {
+        const d = el("span", className);
+        d.style.background = color;
+        return d;
+      }
+
+      // Plots are regenerated under fixed URLs, so bust the cache per refresh.
+      function renderCharts() {
+        const v = Date.now();
+        const grid = document.querySelector("main.grid");
+
+        for (const c of CHARTS) {
+          const card = el("section", "chart-card");
+
+          const header = el("div", "chart-header");
+          const title = el("div", "chart-title");
+          title.append(dot("dot", c.color), el("span", null, c.title));
+          const pill = el("div", "pill");
+          for (const item of c.legend) {
+            pill.append(dot("pill-dot", item.color), el("span", null, item.label));
+          }
+          header.append(title, pill);
+
+          const wrap = el("div", "chart-img-wrap");
+          const picture = document.createElement("picture");
+          const source = document.createElement("source");
+          source.srcset = `pimon/${c.file}_mobile.png?v=${v}`;
+          source.media = "(max-width: 768px)";
+          const img = document.createElement("img");
+          img.src = `pimon/${c.file}.png?v=${v}`;
+          img.alt = c.alt;
+          picture.append(source, img);
+          wrap.append(picture);
+
+          card.append(header, el("div", "chart-meta", c.meta), wrap);
+          grid.append(card);
+        }
+      }
+
       function formatTime(ts) {
         if (!ts || ts <= 0) return "–";
         const d = new Date(ts * 1000);
@@ -564,7 +491,10 @@
         }
       }
 
-      document.addEventListener("DOMContentLoaded", loadStatus);
+      document.addEventListener("DOMContentLoaded", () => {
+        renderCharts();
+        loadStatus();
+      });
     </script>
   </body>
 </html>
