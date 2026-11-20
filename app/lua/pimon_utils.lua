@@ -17,8 +17,8 @@ function M.run_cmd(cmd)
 	local result = f:read("*a") or ""
 	f:close()
 
-	-- trim trailing whitespace
-	return result:gsub("%s+$", "")
+	-- trim trailing whitespace (parentheses drop gsub's second return value)
+	return (result:gsub("%s+$", ""))
 end
 
 -- Read a file and trim trailing whitespace.
@@ -35,15 +35,24 @@ function M.get_value(path)
 	end
 
 	-- trim trailing whitespace
-	return result:gsub("%s+$", "")
+	return (result:gsub("%s+$", ""))
 end
 
 -- Open SQLite database with busy timeout.
 function M.open_db(path)
-	local db, err = sqlite3.open(path or config.DB_PATH)
-	assert(db, "Failed to open database: " .. (err or path or config.DB_PATH))
+	local db, _, err = sqlite3.open(path or config.DB_PATH)
+	assert(db, "Failed to open database: " .. tostring(err or path or config.DB_PATH))
 	db:busy_timeout(5000)
 	return db
+end
+
+-- Write a file atomically so readers never see a partial file.
+function M.write_atomic(path, content)
+	local tmp = path .. ".tmp"
+	local f = assert(io.open(tmp, "w"))
+	assert(f:write(content))
+	assert(f:close())
+	assert(os.rename(tmp, path))
 end
 
 return M
