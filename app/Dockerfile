@@ -1,19 +1,17 @@
 FROM alpine:latest
 
 ENV TZ=Europe/Stockholm
-# Alpine's lua5.1-* packages install outside LuaJIT's default search paths.
-ENV LUA_PATH="/opt/pimon/lua/?.lua;/opt/pimon/lua/?/init.lua;/usr/share/lua/5.1/?.lua;/usr/share/lua/5.1/?/init.lua;;"
-ENV LUA_CPATH="/usr/lib/lua/5.1/?.so;;"
+ENV LUA_PATH="/opt/pimon/lua/?.lua;/opt/pimon/lua/?/init.lua;;"
 
 # procps-ng provides vmstat (busybox has none); busybox supplies crond, df, awk, find.
-RUN apk add --no-cache \
-        luajit \
-        lua5.1-lsqlite3 \
-        lua5.1-dkjson \
-        sqlite \
-        gnuplot \
-        procps-ng \
-        tzdata
+# lsqlite3 and dkjson are luarocks, not apk packages. Rocks install under /usr/local,
+# which LuaJIT searches by default. Build tooling is removed in the same layer.
+RUN apk add --no-cache luajit sqlite gnuplot procps-ng tzdata \
+    && apk add --no-cache --virtual .build luarocks build-base luajit-dev sqlite-dev unzip curl \
+    && luarocks --lua-version=5.1 install lsqlite3 \
+        LUA_INCDIR=/usr/include/luajit-2.1 \
+    && luarocks --lua-version=5.1 install dkjson \
+    && apk del .build
 
 WORKDIR /opt/pimon
 
