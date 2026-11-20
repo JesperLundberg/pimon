@@ -1,16 +1,16 @@
-LUA_PATH=/opt/pimon/lua/?.lua;/opt/pimon/lua/?/init.lua;;
+# busybox crond format: no user column. TZ and LUA_PATH are inherited from the
+# environment crond is started in (Dockerfile ENV / compose), not set here.
+# Output goes to PID 1's stdout so `docker logs` works and no file grows forever.
 
-# Tick every other minute
-*/2 * * * * root /opt/pimon/lua/pimon_tick.lua >> /var/log/cron.log 2>&1
+# Tick every other minute, then refresh the status JSON from the new row.
+# Status only reads the latest tick, so running it more often changes nothing.
+*/2 * * * * (/opt/pimon/lua/pimon_tick.lua && /opt/pimon/lua/pimon_status.lua) >> /proc/1/fd/1 2>&1
 
-# Plots every other minute, offset by 1 minute
-1-59/2 * * * * root /opt/pimon/make_plots.sh >> /var/log/cron.log 2>&1
-
-# Status every minute (no DB writes)
-* * * * * root /opt/pimon/lua/pimon_status.lua >> /var/log/cron.log 2>&1
+# Plots every 5 minutes (14 gnuplot runs each; the Pi is the bottleneck)
+*/5 * * * * /opt/pimon/make_plots.sh >> /proc/1/fd/1 2>&1
 
 # Save DB from tmpfs to disk every hour
-0 * * * * root sqlite3 /opt/pimon/db/pimon.db ".backup '/opt/pimon/backups/pimon.db'" >> /var/log/cron.log 2>&1
+0 * * * * /opt/pimon/backup.sh >> /proc/1/fd/1 2>&1
 
 # Rotate archives once a week
-0 0 * * 0 root sleep 15 && /opt/pimon/lua/pimon_rotate.lua >> /var/log/cron.log 2>&1
+0 0 * * 0 sleep 15 && /opt/pimon/lua/pimon_rotate.lua >> /proc/1/fd/1 2>&1

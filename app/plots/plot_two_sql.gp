@@ -31,9 +31,11 @@ set output OUT
 set title TITLE textcolor rgb "#4c4f69"
 set ylabel YLAB textcolor rgb "#4c4f69"
 
-# Build sqlite3 commands as gnuplot input streams.
-CMD_A = sprintf("< sqlite3 -noheader -separator '|' '%s' \"SELECT datetime(ts_utc,'localtime'), %s FROM pi_tick WHERE ts_utc >= datetime('now','localtime','%s') ORDER BY id;\"", DB, COL_A, WINDOW)
-CMD_B = sprintf("< sqlite3 -noheader -separator '|' '%s' \"SELECT datetime(ts_utc,'localtime'), %s FROM pi_tick WHERE ts_utc >= datetime('now','localtime','%s') ORDER BY id;\"", DB, COL_B, WINDOW)
+# ts_utc is stored in UTC, so the window filter must compare against UTC 'now';
+# only the displayed timestamp is converted to local time.
+QUERY = "< sqlite3 -noheader -separator '|' '%s' \"SELECT datetime(ts_utc,'localtime'), %s FROM pi_tick WHERE ts_utc >= datetime('now','%s') ORDER BY ts_utc;\""
+CMD_A = sprintf(QUERY, DB, COL_A, WINDOW)
+CMD_B = sprintf(QUERY, DB, COL_B, WINDOW)
 
 plot \
   CMD_A using 1:2 with lines lw LW lc rgb LINECOLOR_A title LABEL_A, \
