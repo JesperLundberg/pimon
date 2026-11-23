@@ -16,8 +16,12 @@ fi
 crond -f -l 8 -c /etc/crontabs &
 CRON_PID=$!
 
+# Host networking: this binds port 8088 on the host.
+httpd -f -p 8088 -h /var/www/html &
+HTTPD_PID=$!
+
 shutdown() {
-  kill "$CRON_PID" 2>/dev/null || true
+  kill "$CRON_PID" "$HTTPD_PID" 2>/dev/null || true
   /opt/pimon/backup.sh || true
   exit 0
 }

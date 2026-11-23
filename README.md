@@ -2,7 +2,7 @@
 
 Lightweight Raspberry Pi monitor. Cron jobs in the `pimon` container sample
 system metrics into SQLite, render PNG plots with gnuplot, and write a
-`status.json`. The `web` container (nginx) serves a static page that shows them.
+`status.json`. Busybox `httpd` in the same container serves a static page that shows them.
 
 ## Run
 

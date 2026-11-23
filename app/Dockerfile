@@ -4,12 +4,13 @@ ENV TZ=Europe/Stockholm
 ENV LUA_PATH="/opt/pimon/lua/?.lua;/opt/pimon/lua/?/init.lua;;"
 
 # procps-ng provides vmstat (busybox has none); busybox supplies crond, df, awk, find.
+# busybox-extras provides httpd, which Alpine's base busybox lacks.
 # lsqlite3 and dkjson are luarocks, not apk packages. Alpine ships one luarocks package
 # per Lua version (luarocks5.1, binary luarocks-5.1). Rocks install under /usr/local,
 # which LuaJIT searches by default. Build tooling is removed in the same layer.
 # sqlite-libs must be explicit: lsqlite3.so links against it, and otherwise it is only
 # pulled in by sqlite-dev and removed together with the build group.
-RUN apk add --no-cache luajit sqlite sqlite-libs gnuplot font-dejavu procps-ng tzdata \
+RUN apk add --no-cache luajit sqlite sqlite-libs gnuplot font-dejavu procps-ng tzdata busybox-extras \
     && apk add --no-cache --virtual .build luarocks5.1 build-base luajit-dev sqlite-dev unzip curl \
     && luarocks-5.1 install lsqlite3 LUA_INCDIR=/usr/include/luajit-2.1 \
     && luarocks-5.1 install dkjson \
@@ -24,6 +25,7 @@ COPY make_plots.sh backup.sh ./
 # busybox crond reads /etc/crontabs/<user>; the file must not be group/world writable.
 COPY crontab /etc/crontabs/root
 COPY entrypoint.sh ./entrypoint.sh
+COPY pimon.html /var/www/html/pimon.html
 
 RUN chmod +x /opt/pimon/make_plots.sh \
     && chmod +x /opt/pimon/backup.sh \
