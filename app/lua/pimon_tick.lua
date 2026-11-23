@@ -3,14 +3,16 @@
 -- pimon_tick.lua
 -- Collect Raspberry Pi / host metrics and store them in SQLite.
 --
--- Frequency: 1 sample per real minute (via cron).
+-- Frequency: 1 sample every 2 minutes (via cron).
 --
 -- Notes:
 -- - /proc stats (load/mem) are generally host-level even inside containers.
 -- - Disk usage for host root is collected via a bind-mount of / -> /hostfs.
 
+local sqlite3 = require("lsqlite3")
 local config = require("pimon_config")
 local utils = require("pimon_utils")
+local vmstat = require("pimon_vmstat")
 
 local function now_utc()
 	-- SQLite-friendly UTC timestamp
@@ -32,7 +34,7 @@ end
 
 -- Return disk usage percent for / on the HOST filesystem.
 local function disk_used_pct()
-	local raw = utils.run_cmd("df -P " .. config.HOST_FS .. "| awk 'NR==2{print $5}'") or ""
+	local raw = utils.run_cmd("df -P " .. config.HOST_FS .. " | awk 'NR==2{print $5}'") or ""
 	-- Grab only the numbers of the returned value
 	raw = raw:match("(%d+)")
 	local disk_usage = tonumber(raw)
@@ -53,49 +55,32 @@ local function cpu_temp_c()
 	return millicelsius / 1000.0
 end
 
-local function parse_vmstat_line(line)
-	-- Expected columns (procps):
-	-- r b swpd free buff cache si so bi bo in cs us sy id wa st
-
-	local cols = {}
-	for tok in line:gmatch("%S+") do
-		cols[#cols + 1] = tok
-	end
-
-	-- Need at least through "id" (15). "wa" (16) and "st" (17) are usually present.
-	if #cols < 15 then
-		error("vmstat output too short: " .. line, 0)
-	end
-
-	local v = {
-		r = tonumber(cols[1]) or 0,
-		b = tonumber(cols[2]) or 0,
-
-		-- Swap (usually kB/s in procps vmstat)
-		si = tonumber(cols[7]) or 0,
-		so = tonumber(cols[8]) or 0,
-
-		-- Block IO (blocks/s; depends on system block size)
-		bi = tonumber(cols[9]) or 0,
-		bo = tonumber(cols[10]) or 0,
-
-		-- CPU (%)
-		us = tonumber(cols[13]) or 0,
-		sy = tonumber(cols[14]) or 0,
-		id = tonumber(cols[15]) or 0,
-		wa = tonumber(cols[16]) or 0, -- may be missing on some builds
-	}
-
-	return v
-end
-
 local function get_vmstat_sample()
 	local line = utils.run_cmd("vmstat 1 2 | tail -1")
-	return parse_vmstat_line(line)
+	return vmstat.parse_line(line)
+end
+
+local VM_COLUMNS = {
+	"vm_r", "vm_si", "vm_so", "vm_wa", "vm_us", "vm_sy", "vm_id", "vm_bi", "vm_bo",
+}
+
+-- Add any vm_* columns missing from a table created before vmstat support.
+-- Existing rows get 0 so the NOT NULL columns stay valid.
+local function migrate_schema(db)
+	local have = {}
+	for row in db:nrows("PRAGMA table_info(pi_tick);") do
+		have[row.name] = true
+	end
+	for _, col in ipairs(VM_COLUMNS) do
+		if not have[col] then
+			local rc = db:exec(("ALTER TABLE pi_tick ADD COLUMN %s INTEGER NOT NULL DEFAULT 0;"):format(col))
+			assert(rc == 0, "migration failed for " .. col .. ": " .. db:errmsg())
+		end
+	end
 end
 
 local function init_schema(db)
-	db:exec([[
+	local rc = db:exec([[
     PRAGMA journal_mode=WAL;
 
     CREATE TABLE IF NOT EXISTS pi_tick (
@@ -121,6 +106,13 @@ local function init_schema(db)
       notes         TEXT
     );
   ]])
+	assert(rc == sqlite3.OK, "schema init failed: " .. db:errmsg())
+
+	migrate_schema(db)
+
+	-- Window queries filter on ts_utc.
+	rc = db:exec("CREATE INDEX IF NOT EXISTS idx_pi_tick_ts ON pi_tick(ts_utc);")
+	assert(rc == sqlite3.OK, "index creation failed: " .. db:errmsg())
 end
 
 local function insert_tick(db, row)
@@ -137,7 +129,9 @@ local function insert_tick(db, row)
     );
   ]])
 
-	stmt:bind_values(
+	assert(stmt, "prepare failed: " .. db:errmsg())
+
+	local brc = stmt:bind_values(
 		row.ts_utc,
 		row.load1,
 		row.mem_total_kb,
@@ -156,13 +150,16 @@ local function insert_tick(db, row)
 		row.notes
 	)
 
-	stmt:step()
+	assert(brc == sqlite3.OK, "bind failed: " .. db:errmsg())
+
+	local src = stmt:step()
 	stmt:finalize()
+	assert(src == sqlite3.DONE, "insert failed: " .. db:errmsg())
 end
 
 local function main()
 	-- Ensure db directory exists on tmpfs
-	utils.ensure_dir("/opt/pimon/db")
+	utils.ensure_dir(config.DB_DIR)
 
 	local db = utils.open_db(config.DB_PATH)
 	init_schema(db)

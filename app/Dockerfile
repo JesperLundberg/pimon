@@ -1,41 +1,37 @@
-FROM debian:bookworm-slim
+FROM alpine:latest
 
-ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Stockholm
 ENV LUA_PATH="/opt/pimon/lua/?.lua;/opt/pimon/lua/?/init.lua;;"
 
-RUN apt-get update &&     apt-get install -y --no-install-recommends \
-        luajit \
-        luarocks \
-        sqlite3 \
-        gnuplot-nox \
-        procps \
-        curl \
-        cron \
-        tzdata \
-        build-essential \
-        libsqlite3-dev && \
-    luarocks --lua-version=5.1 install lsqlite3 && \
-    luarocks --lua-version=5.1 install dkjson && \
-    apt-get remove -y build-essential libsqlite3-dev && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# procps-ng provides vmstat (busybox has none); busybox supplies crond, df, awk, find.
+# lsqlite3 and dkjson are luarocks, not apk packages. Alpine ships one luarocks package
+# per Lua version (luarocks5.1, binary luarocks-5.1). Rocks install under /usr/local,
+# which LuaJIT searches by default. Build tooling is removed in the same layer.
+# sqlite-libs must be explicit: lsqlite3.so links against it, and otherwise it is only
+# pulled in by sqlite-dev and removed together with the build group.
+RUN apk add --no-cache luajit sqlite sqlite-libs gnuplot font-dejavu procps-ng tzdata \
+    && apk add --no-cache --virtual .build luarocks5.1 build-base luajit-dev sqlite-dev unzip curl \
+    && luarocks-5.1 install lsqlite3 LUA_INCDIR=/usr/include/luajit-2.1 \
+    && luarocks-5.1 install dkjson \
+    && apk del .build
 
 WORKDIR /opt/pimon
 
 COPY lua ./lua
 COPY plots ./plots
-COPY make_plots.sh ./
-COPY crontab /etc/cron.d/pimon
+COPY tests ./tests
+COPY make_plots.sh backup.sh ./
+# busybox crond reads /etc/crontabs/<user>; the file must not be group/world writable.
+COPY crontab /etc/crontabs/root
 COPY entrypoint.sh ./entrypoint.sh
 
 RUN chmod +x /opt/pimon/make_plots.sh \
+    && chmod +x /opt/pimon/backup.sh \
     && chmod +x /opt/pimon/lua/*.lua \
-    && chmod 0644 /etc/cron.d/pimon \
+    && chmod 0600 /etc/crontabs/root \
     && mkdir -p /var/www/html/pimon \
     && mkdir -p /opt/pimon/backups \
     && mkdir -p /opt/pimon/archive \
-    && chmod +x /opt/pimon/entrypoint.sh \
-    && touch /var/log/cron.log
+    && chmod +x /opt/pimon/entrypoint.sh
 
 CMD ["/opt/pimon/entrypoint.sh"]

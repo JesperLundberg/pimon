@@ -30,10 +30,8 @@ local function get_latest(db)
 end
 
 local function write_json(obj)
-	utils.ensure_dir("/var/www/html/pimon")
-	local f = assert(io.open(JSON_PATH, "w"))
-	f:write(json.encode(obj, { indent = true }))
-	f:close()
+	utils.ensure_dir(config.JSON_DIR)
+	utils.write_atomic(JSON_PATH, json.encode(obj, { indent = true }))
 end
 
 local function main()

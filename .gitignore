@@ -1,1 +1,4 @@
 pimon.db
+pimon.db.tmp
+data/
+*.png
